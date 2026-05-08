@@ -5,50 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <script src="https://telegram.org"></script>
     <style>
-        body { background-color: #111; color: #fff; text-align: center; font-family: sans-serif; padding-top: 50px; }
-        #score { font-size: 60px; color: gold; margin-bottom: 20px; }
-        #coin {
-            width: 150px; height: 150px; background: gold; border-radius: 50%;
+        body { background-color: #1a1a1a; color: white; text-align: center; font-family: sans-serif; margin: 0; padding-top: 50px; }
+        #score { font-size: 70px; font-weight: bold; color: #f3ba2f; margin-bottom: 20px; }
+        .coin-btn {
+            width: 180px; height: 180px; background: #f3ba2f; border-radius: 50%;
             margin: 0 auto; display: flex; align-items: center; justify-content: center;
-            font-size: 60px; cursor: pointer; border: 5px solid orange;
+            font-size: 80px; cursor: pointer; border: 8px solid #a88110;
+            box-shadow: 0 0 20px rgba(243, 186, 47, 0.4);
         }
-        #coin:active { transform: scale(0.9); }
-        button { margin-top: 20px; padding: 10px 20px; font-size: 18px; border-radius: 10px; cursor: pointer; }
+        .coin-btn:active { transform: scale(0.95); }
+        .reset-btn {
+            margin-top: 40px; padding: 12px 25px; background: white;
+            color: black; border-radius: 10px; border: none; font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
     <div id="score">0</div>
-    <div id="coin" onclick="clickAction()">💰</div>
-    <br>
-    <button onclick="resetAction()">Сбросить прогресс</button>
+    <div class="coin-btn" onclick="addPoint()">💰</div>
+    <button class="reset-btn" onclick="resetAll()">Сбросить прогресс</button>
 
     <script>
-        // Инициализация Telegram
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Загрузка счета
-        let score = parseInt(localStorage.getItem('score')) || 0;
-        document.getElementById('score').innerText = score;
+        let count = parseInt(localStorage.getItem('myScore')) || 0;
+        document.getElementById('score').innerText = count;
 
-        // Функция клика
-        function clickAction() {
-            score = score + 1;
-            document.getElementById('score').innerText = score;
-            localStorage.setItem('score', score);
+        function addPoint() {
+            count = count + 1;
+            document.getElementById('score').innerText = count;
+            localStorage.setItem('myScore', count);
 
-            // Вибрация
             if (tg.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred('light');
+                tg.HapticFeedback.impactOccurred('medium');
             }
         }
 
-        // Функция сброса
-        function resetAction() {
-            score = 0;
-            document.getElementById('score').innerText = score;
-            localStorage.setItem('score', 0);
+        function resetAll() {
+            count = 0;
+            document.getElementById('score').innerText = count;
+            localStorage.setItem('myScore', 0);
         }
     </script>
 </body>
