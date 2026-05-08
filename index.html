@@ -1,52 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AHUY APP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <script src="https://telegram.org"></script>
     <style>
+        :root {
+            --bg-color: #0f0f0f;
+            --main-color: #f3ba2f; /* Золотой цвет как у Binance */
+            --text-color: #ffffff;
+        }
         body {
-            background: #000; color: #fff; font-family: sans-serif;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
         }
-        .balance { font-size: 2em; margin-bottom: 20px; color: #00ff00; }
+        #score-container {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .coin {
-            width: 150px; height: 150px; background: radial-gradient(#ffd700, #ffa500);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 4em; cursor: pointer; transition: transform 0.1s; box-shadow: 0 0 20px #ffd700;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #f3ba2f 0%, #a88110 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 100px;
+            box-shadow: 0 0 50px rgba(243, 186, 47, 0.3);
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            position: relative;
         }
-        .coin:active { transform: scale(0.9); }
-        .btn { margin-top: 20px; padding: 10px 20px; background: #333; border: none; color: #fff; border-radius: 10px; }
+        .coin:active {
+            transform: scale(0.95);
+        }
+        .coin::before {
+            content: '$';
+            color: rgba(0,0,0,0.2);
+            font-weight: bold;
+        }
+        .btn-group {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 80%;
+        }
+        button {
+            background-color: #242424;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .gamble-btn {
+            background: linear-gradient(90deg, #f3ba2f, #d49a00);
+            color: black;
+        }
+        /* Анимация вылетающих цифр */
+        .plus-one {
+            position: absolute;
+            color: var(--main-color);
+            font-size: 24px;
+            font-weight: bold;
+            animation: moveUp 0.5s ease-out forwards;
+            pointer-events: none;
+        }
+        @keyframes moveUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
     </style>
 </head>
 <body>
-    <div class="balance">$<span id="score">0</span></div>
-    <div class="coin" onclick="clickCoin()">💎</div>
-    <button class="btn" onclick="gamble()">🎰 КАЗИНО (x2 или 0)</button>
+
+    <div id="score-container">
+        <span style="color: #f3ba2f;">$</span>
+        <span id="score">0</span>
+    </div>
+
+    <div class="coin" id="coin-btn"></div>
+
+    <div class="btn-group">
+        <button class="gamble-btn" onclick="gamble()">🎰 ИСПЫТАТЬ УДАЧУ (x2 или 0)</button>
+        <button onclick="resetScore()">🔄 СБРОСИТЬ ПРОГРЕСС</button>
+    </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Развернуть на весь экран
+        tg.expand();
+        tg.MainButton.hide();
 
-        let score = 0;
+        let score = parseInt(localStorage.getItem('score')) || 0;
         const scoreEl = document.getElementById('score');
+        const coinBtn = document.getElementById('coin-btn');
 
-        function clickCoin() {
+        scoreEl.innerText = score;
+
+        coinBtn.addEventListener('click', (e) => {
             score++;
+            updateScore();
+
+            // Вибрация
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
+            // Анимация +1
+            const plus = document.createElement('div');
+            plus.innerText = '+1';
+            plus.className = 'plus-one';
+            plus.style.left = e.clientX - 20 + 'px';
+            plus.style.top = e.clientY - 40 + 'px';
+            document.body.appendChild(plus);
+            setTimeout(() => plus.remove(), 500);
+        });
+        function updateScore() {
             scoreEl.innerText = score;
-            tg.HapticFeedback.impactOccurred('medium'); // Вибрация при клике
+            localStorage.setItem('score', score); // Сохраняем прогресс!
         }
 
         function gamble() {
+            if (score <= 0) return alert("Сначала заработай хотя бы 1$!");
+
             if (Math.random() > 0.5) {
                 score *= 2;
-                alert("🔥 КРАСАВА! УДВОИЛ!");
+                tg.showPopup({message: "ПОБЕДА! Капитал удвоен! 🚀"});
             } else {
                 score = 0;
-                alert("💀 ВСЁ ПРОСРАЛ...");
+                tg.showPopup({message: "Крах... Ты банкрот! 📉"});
             }
-            scoreEl.innerText = score;
+            updateScore();
+        }
+
+        function resetScore() {
+            score = 0;
+            updateScore();
         }
     </script>
 </body>
