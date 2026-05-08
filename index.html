@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AHUY APP</title>
+    <script src="https://telegram.org"></script>
+    <style>
+        body {
+            background: #000; color: #fff; font-family: sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0;
+        }
+        .balance { font-size: 2em; margin-bottom: 20px; color: #00ff00; }
+        .coin {
+            width: 150px; height: 150px; background: radial-gradient(#ffd700, #ffa500);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 4em; cursor: pointer; transition: transform 0.1s; box-shadow: 0 0 20px #ffd700;
+        }
+        .coin:active { transform: scale(0.9); }
+        .btn { margin-top: 20px; padding: 10px 20px; background: #333; border: none; color: #fff; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="balance">$<span id="score">0</span></div>
+    <div class="coin" onclick="clickCoin()">💎</div>
+    <button class="btn" onclick="gamble()">🎰 КАЗИНО (x2 или 0)</button>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // Развернуть на весь экран
+
+        let score = 0;
+        const scoreEl = document.getElementById('score');
+
+        function clickCoin() {
+            score++;
+            scoreEl.innerText = score;
+            tg.HapticFeedback.impactOccurred('medium'); // Вибрация при клике
+        }
+
+        function gamble() {
+            if (Math.random() > 0.5) {
+                score *= 2;
+                alert("🔥 КРАСАВА! УДВОИЛ!");
+            } else {
+                score = 0;
+                alert("💀 ВСЁ ПРОСРАЛ...");
+            }
+            scoreEl.innerText = score;
+        }
+    </script>
+</body>
+</html>
