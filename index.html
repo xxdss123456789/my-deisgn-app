@@ -5,51 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <script src="https://telegram.org"></script>
     <style>
-        body { background-color: #0f0f0f; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        #score { font-size: 60px; font-weight: bold; margin-bottom: 20px; color: #f3ba2f; }
-        .coin { width: 200px; height: 200px; background: #f3ba2f; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 80px; cursor: pointer; box-shadow: 0 0 20px #f3ba2f; }
-        .coin:active { transform: scale(0.95); }
-        .btn { margin-top: 20px; padding: 15px 30px; width: 80%; background: #242424; color: white; border: 1px solid #f3ba2f; border-radius: 10px; font-weight: bold; }
+        body { background-color: #111; color: #fff; text-align: center; font-family: sans-serif; padding-top: 50px; }
+        #score { font-size: 60px; color: gold; margin-bottom: 20px; }
+        #coin {
+            width: 150px; height: 150px; background: gold; border-radius: 50%;
+            margin: 0 auto; display: flex; align-items: center; justify-content: center;
+            font-size: 60px; cursor: pointer; border: 5px solid orange;
+        }
+        #coin:active { transform: scale(0.9); }
+        button { margin-top: 20px; padding: 10px 20px; font-size: 18px; border-radius: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
+
     <div id="score">0</div>
-    <div class="coin" onclick="handleTap()">💰</div>
-    <button class="btn" onclick="handleGamble()">🎰 ИСПЫТАТЬ УДАЧУ</button>
-    <button class="btn" onclick="handleReset()">🔄 СБРОСИТЬ</button>
+    <div id="coin" onclick="clickAction()">💰</div>
+    <br>
+    <button onclick="resetAction()">Сбросить прогресс</button>
 
     <script>
+        // Инициализация Telegram
         let tg = window.Telegram.WebApp;
         tg.expand();
 
+        // Загрузка счета
         let score = parseInt(localStorage.getItem('score')) || 0;
         document.getElementById('score').innerText = score;
 
-        function handleTap() {
-            score++;
-            update();
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-        }
-
-        function handleGamble() {
-            if (Math.random() > 0.5) {
-                score *= 2;
-                alert("УДВОЕНО!");
-            } else {
-                score = 0;
-                alert("ПРОИГРЫШ!");
-            }
-            update();
-        }
-
-        function handleReset() {
-            score = 0;
-            update();
-        }
-
-        function update() {
+        // Функция клика
+        function clickAction() {
+            score = score + 1;
             document.getElementById('score').innerText = score;
             localStorage.setItem('score', score);
+
+            // Вибрация
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('light');
+            }
+        }
+
+        // Функция сброса
+        function resetAction() {
+            score = 0;
+            document.getElementById('score').innerText = score;
+            localStorage.setItem('score', 0);
         }
     </script>
 </body>
