@@ -1,200 +1,171 @@
-[09.05.2026 12:40] 𝗗𝗔𝗥𝗞: <!DOCTYPE html>
+[09.05.2026 12:45] 𝗗𝗔𝗥𝗞: <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>DARK EMPIRE</title>
+    <title>DARK AVIATOR</title>
     <style>
-        /* Общие настройки — убираем всё лишнее */
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background: #0a0a0a;
+            color: #fff; font-family: 'Arial Black', sans-serif;
+        }
+
+        /* График и анимация */
+        .game-area {
+            position: relative; width: 100%; height: 70vh;
+            background: radial-gradient(circle at bottom left, #2c1a10 0%, #000 70%);
+            border-bottom: 2px solid #bf953f;
+            display: flex; justify-content: center; align-items: center;
             overflow: hidden;
-            background: #050505;
-            color: #fff;
-            font-family: 'Arial Black', sans-serif;
-            perspective: 1000px; /* Для 3D эффекта */
         }
 
-        /* Живой фон с частицами */
-        #bg-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 0;
+        #plane {
+            position: absolute; bottom: 50px; left: 50px;
+            font-size: 50px; transition: transform 0.1s linear;
+            z-index: 10; filter: drop-shadow(0 0 15px #bf953f);
         }
 
-        /* Главный контейнер, который будет двигаться за мышкой */
-        .viewport {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1;
-            transition: transform 0.1s ease-out;
+        .multiplier {
+            font-size: 120px; font-weight: bold;
+            background: linear-gradient(to bottom, #fff, #bf953f);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            z-index: 5; text-shadow: 0 0 30px rgba(191, 149, 63, 0.3);
         }
 
-        .content {
-            text-align: center;
-            pointer-events: none; /* Чтобы не мешать мышке */
+        /* Панель управления */
+        .controls {
+            height: 30vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            background: #050505; gap: 15px;
         }
 
-        /* Типографика как на картинке: массивная и агрессивная */
-        h1 {
-            font-size: clamp(50px, 12vw, 120px);
-            line-height: 0.85;
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: -5px;
-            filter: drop-shadow(0 20px 50px rgba(0,0,0,1));
-        }
+        .stats { font-size: 20px; color: #bf953f; letter-spacing: 2px; }
+        .balance-num { color: #fff; font-size: 30px; }
 
-        .dark-text {
-            color: #fff;
-            display: block;
-        }
-
-        .gold-text {
-            display: block;
-            background: linear-gradient(180deg, #fff 0%, #fcf6ba 20%, #bf953f 50%, #8b6914 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 20px rgba(191, 149, 63, 0.5));
-            animation: shine 3s infinite linear;
-        }
-
-        /* Контейнер для кнопок (они должны нажиматься) */
-        .nav {
-            margin-top: 50px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            pointer-events: all;
-        }
+        .btn-box { display: flex; gap: 20px; }
 
         .btn {
-            text-decoration: none;
-            color: #fff;
-            font-size: 20px;
-            padding: 15px 60px;
-            border: 1px solid rgba(191, 149, 63, 0.5);
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            position: relative;
-            transition: 0.4s;
-            overflow: hidden;
+            padding: 20px 60px; font-size: 20px; font-weight: bold;
+            text-transform: uppercase; cursor: pointer; border: none;
+            transition: 0.3s; letter-spacing: 2px;
         }
 
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(252, 246, 186, 0.4), transparent);
-            transition: 0.5s;
-        }
+        #bet-btn { background: #bf953f; color: #000; }
+        #bet-btn:disabled { background: #444; color: #888; cursor: not-allowed; }
 
-        .btn:hover::before {
-            left: 100%;
-        }
+        #cashout-btn { background: #ff4d4d; color: #fff; display: none; }
 
-        .btn:hover {
-            border-color: #fcf6ba;
-            box-shadow: 0 0 40px rgba(191, 149, 63, 0.8);
-            transform: scale(1.1) rotateX(10deg);
-        }
+        .status-msg { height: 20px; color: #ff4d4d; font-size: 14px; text-transform: uppercase; }
 
-        /* Анимация перелива золота */
-        @keyframes shine {
-            0% { filter: hue-rotate(0deg) brightness(1); }
-            50% { filter: hue-rotate(10deg) brightness(1.3); }
-            100% { filter: hue-rotate(0deg) brightness(1); }
-        }
-
-        /* Пыль на фоне */
-        .overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://transparenttextures.com');
-            opacity: 0.2;
-            pointer-events: none;
-            z-index: 2;
+        /* След от самолета */
+        #trail {
+            position: absolute; bottom: 75px; left: 75px;
+            width: 0; height: 0; border-left: 3px solid #bf953f;
+            border-bottom: 3px solid #bf953f; opacity: 0.3;
         }
     </style>
 </head>
 <body>
 
-    <canvas id="bg-canvas"></canvas>
-    <div class="overlay"></div>
+    <div class="game-area">
+        <div id="plane">✈️</div>
+        <div class="multiplier" id="x-val">x1.00</div>
+        <div id="trail"></div>
+    </div>
 
-    <div class="viewport" id="viewport">
-        <div class="content">
-            <h1>
-                <span class="dark-text">DARK</span>
-                <span class="gold-text">ПРИВЕТСТВУЕТ</span>
-            </h1>
-[09.05.2026 12:40] 𝗗𝗔𝗥𝗞: <div class="nav">
-                <a href="#" class="btn">КЛИЕНТЫ</a>
-                <a href="#" class="btn">ОБУЧЕНИЕ</a>
-                <a href="#" class="btn">ВХОД В СИСТЕМУ</a>
-            </div>
+    <div class="controls">
+        <div class="status-msg" id="msg"></div>
+        <div class="stats">БАЛАНС: <span class="balance-num" id="balance">1000</span> DARK</div>
+
+        <div class="btn-box">
+            <button class="btn" id="bet-btn">СТАВКА 100</button>
+            <button class="btn" id="cashout-btn">ЗАБРАТЬ</button>
         </div>
     </div>
 
     <script>
-        // Эффект слежения мышки (Параллакс)
-        const viewport = document.getElementById('viewport');
-        document.addEventListener('mousemove', (e) => {
-            let x = (window.innerWidth / 2 - e.pageX) / 20;
-            let y = (window.innerHeight / 2 - e.pageY) / 20;
-            viewport.style.transform = rotateY(${x}deg) rotateX(${-y}deg);
-        });
+        let balance = 1000;
+        let x = 1.00;
+        let isFlying = false;
+        let betAmount = 100;
+        let gameInterval;
 
-        // Простой скрипт для искр на фоне
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        const xText = document.getElementById('x-val');
+        const balanceText = document.getElementById('balance');
+        const plane = document.getElementById('plane');
+        const betBtn = document.getElementById('bet-btn');
+        const cashBtn = document.getElementById('cashout-btn');
+        const msg = document.getElementById('msg');
 
-        let particles = [];
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 - 0.5;
-                this.color = Math.random() > 0.5 ? '#bf953f' : '#333';
+        function startRound() {
+            if (balance < betAmount) {
+                msg.innerText = "НЕДОСТАТОЧНО СРЕДСТВ";
+                return;
             }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x > canvas.width) this.x = 0;
-                if (this.x < 0) this.x = canvas.width;
-                if (this.y > canvas.height) this.y = 0;
-                if (this.y < 0) this.y = canvas.height;
-            }
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
+
+            // Сброс настроек
+            isFlying = true;
+            x = 1.00;
+            balance -= betAmount;
+            updateUI();
+
+            msg.innerText = "";
+            betBtn.style.display = 'none';
+            cashBtn.style.display = 'block';
+            plane.style.transform = translate(0, 0);
+
+            // Генерация момента взрыва (Crash)
+            // Чем выше X, тем меньше шанс до него дойти
+            const crashAt = Math.random() * 10 + 1;
+[09.05.2026 12:45] 𝗗𝗔𝗥𝗞: gameInterval = setInterval(() => {
+                x += 0.01 + (x / 100); // Скорость роста X увеличивается
+                xText.innerText = x${x.toFixed(2)};
+
+                // Двигаем самолет вверх и вправо
+                let move = (x - 1) * 50;
+                plane.style.transform = translate(${move * 1.5}px, -${move}px);
+
+                if (x >= crashAt) {
+                    finishGame(true);
+                }
+            }, 50);
         }
 
-        for (let i = 0; i < 100; i++) { particles.push(new Particle()); }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animate);
+        function cashOut() {
+            if (!isFlying) return;
+            let win = betAmount * x;
+            balance += win;
+            msg.style.color = "#00ff00";
+            msg.innerText = ВЫИГРЫШ: +${win.toFixed(0)};
+            finishGame(false);
         }
-        animate();
+
+        function finishGame(isCrash) {
+            isFlying = false;
+            clearInterval(gameInterval);
+
+            if (isCrash) {
+                msg.style.color = "#ff4d4d";
+                msg.innerText = "САМОЛЕТ УЛЕТЕЛ!";
+                xText.style.color = "#ff4d4d";
+            }
+
+            setTimeout(() => {
+                betBtn.style.display = 'block';
+                cashBtn.style.display = 'none';
+                xText.style.color = "";
+                xText.innerText = "x1.00";
+                plane.style.transform = translate(0, 0);
+                updateUI();
+            }, 2000);
+        }
+
+        function updateUI() {
+            balanceText.innerText = balance.toFixed(0);
+        }
+
+        betBtn.addEventListener('click', startRound);
+        cashBtn.addEventListener('click', cashOut);
     </script>
 </body>
 </html>
