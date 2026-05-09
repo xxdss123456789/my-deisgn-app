@@ -5,101 +5,104 @@
     <title>DARK ПРИВЕТСТВУЕТ</title>
     <style>
         body {
-            background-color: #f5f5dc;
+            /* Глубокий темный фон с градиентом в стиле твоей картинки */
+            background: radial-gradient(circle at center, #2c1a10 0%, #000000 100%);
             height: 100vh;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Segoe UI', sans-serif;
-            color: #1a1a1a;
+            font-family: 'Arial Black', sans-serif; /* Более массивный шрифт */
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* Виньетка (затемнение по краям) для атмосферы */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none;
         }
 
         .main-card {
             text-align: center;
-            padding: 40px;
-            border: 1px solid rgba(191, 149, 63, 0.3); /* Тонкая золотистая рамка */
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px); /* Эффект матового стекла */
-            border-radius: 20px;
+            z-index: 1;
         }
 
         h1 {
-            font-size: 45px;
-            letter-spacing: 8px;
+            font-size: clamp(40px, 8vw, 80px); /* Размер подстраивается под экран */
+            margin-bottom: 40px;
             text-transform: uppercase;
-            margin-bottom: 30px;
+            letter-spacing: -2px;
+            line-height: 0.9;
+            color: #fff;
+            /* Тень, чтобы текст "выпирал", как на картинке */
+            text-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
 
         .gold {
-            background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728);
+            /* Бронзово-золотой металлик */
+            background: linear-gradient(to bottom, #fcf6ba 0%, #bf953f 40%, #8b6914 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(191, 149, 63, 0.4));
         }
 
-        /* Контейнер для кнопок */
         .buttons {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 20px;
+            align-items: center;
         }
 
-        /* Стиль кнопок */
         .btn {
             text-decoration: none;
-            color: #1a1a1a;
-            padding: 12px 40px;
-            border: 1px solid #bf953f;
-            border-radius: 30px;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            letter-spacing: 2px;
+            color: #fcf6ba;
+            width: 280px;
+            padding: 15px;
+            border: 2px solid #bf953f;
+            background: rgba(191, 149, 63, 0.05);
+            font-size: 18px;
             text-transform: uppercase;
-            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Эффект при наведении на кнопку */
+        /* Эффект свечения при наведении */
         .btn:hover {
             background: #bf953f;
-            color: white;
-            box-shadow: 0 5px 15px rgba(191, 149, 63, 0.4);
-            transform: translateY(-2px);
+            color: #000;
+            box-shadow: 0 0 30px rgba(191, 149, 63, 0.6);
+            transform: scale(1.05);
         }
 
-        .socials {
-            margin-top: 40px;
-        }
-
-        .socials a {
-            text-decoration: none;
-            color: #bf953f;
-            margin: 0 10px;
+        .sub-text {
+            margin-top: 30px;
+            font-family: 'Segoe UI', sans-serif;
             font-size: 12px;
-            border-bottom: 1px solid transparent;
-        }
-
-        .socials a:hover {
-            border-bottom: 1px solid #bf953f;
+            color: #bf953f;
+            letter-spacing: 5px;
+            opacity: 0.7;
         }
     </style>
 </head>
 <body>
 
     <div class="main-card">
-        <h1>DARK <span class="gold">ПРИВЕТСТВУЕТ</span></h1>
+        <h1>DARK<br><span class="gold">ПРИВЕТСТВУЕТ</span></h1>
 
         <div class="buttons">
-            <a href="#" class="btn">Зайти в DARK</a>
-            <a href="#" class="btn">Наши проекты</a>
+            <a href="#" class="btn">Клиенты</a>
+            <a href="#" class="btn">Обучение</a>
             <a href="#" class="btn">Связаться</a>
         </div>
 
-        <div class="socials">
-            <a href="#">TELEGRAM</a>
-            <a href="#">INSTAGRAM</a>
-            <a href="#">VKONTAKTE</a>
-        </div>
+        <p class="sub-text">PREMIUM QUALITY ONLY</p>
     </div>
 
 </body>
