@@ -1,52 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Dark Clicker</title>
     <script src="https://telegram.org"></script>
     <style>
-        body { background-color: #1a1a1a; color: white; text-align: center; font-family: sans-serif; margin: 0; padding-top: 50px; }
-        #score { font-size: 70px; font-weight: bold; color: #f3ba2f; margin-bottom: 20px; }
-        .coin-btn {
-            width: 180px; height: 180px; background: #f3ba2f; border-radius: 50%;
-            margin: 0 auto; display: flex; align-items: center; justify-content: center;
-            font-size: 80px; cursor: pointer; border: 8px solid #a88110;
-            box-shadow: 0 0 20px rgba(243, 186, 47, 0.4);
+        body {
+            background: #1c1c1c;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
         }
-        .coin-btn:active { transform: scale(0.95); }
-        .reset-btn {
-            margin-top: 40px; padding: 12px 25px; background: white;
-            color: black; border-radius: 10px; border: none; font-weight: bold;
+        #score {
+            font-size: 60px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ffaa00;
+        }
+        .coin-container {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .coin-container:active {
+            transform: scale(0.95);
+        }
+        .coin {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(145deg, #ffcc33, #ffaa00);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(255, 170, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 8px solid #333;
+        }
+        .coin img {
+            width: 100px;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+        }
+        #reset-btn {
+            margin-top: 30px;
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid #555;
+            color: #888;
+            border-radius: 20px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
     <div id="score">0</div>
-    <div class="coin-btn" onclick="addPoint()">💰</div>
-    <button class="reset-btn" onclick="resetAll()">Сбросить прогресс</button>
+
+    <div class="coin-container" onclick="clickCoin()">
+        <div class="coin">
+            <!-- Символ монетки -->
+            <span style="font-size: 80px;">💰</span>
+        </div>
+    </div>
+
+    <button id="reset-btn" onclick="resetProgress()">Сбросить прогресс</button>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand();
+        tg.expand(); // Развернуть на весь экран
 
-        let count = parseInt(localStorage.getItem('myScore')) || 0;
-        document.getElementById('score').innerText = count;
+        let score = localStorage.getItem('clicks') || 0;
+        document.getElementById('score').innerText = score;
 
-        function addPoint() {
-            count = count + 1;
-            document.getElementById('score').innerText = count;
-            localStorage.setItem('myScore', count);
+        function clickCoin() {
+            score++;
+            document.getElementById('score').innerText = score;
+            localStorage.setItem('clicks', score);
 
+            // Вибрация (Haptic Feedback)
             if (tg.HapticFeedback) {
                 tg.HapticFeedback.impactOccurred('medium');
             }
         }
 
-        function resetAll() {
-            count = 0;
-            document.getElementById('score').innerText = count;
-            localStorage.setItem('myScore', 0);
+        function resetProgress() {
+            if(confirm("Точно сбросить?")) {
+                score = 0;
+                document.getElementById('score').innerText = score;
+                localStorage.setItem('clicks', 0);
+            }
         }
     </script>
 </body>
