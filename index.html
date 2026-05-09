@@ -1,68 +1,25 @@
-[09.05.2026 12:45] 𝗗𝗔𝗥𝗞: <!DOCTYPE html>
+[09.05.2026 13:04] 𝗗𝗔𝗥𝗞: <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DARK AVIATOR</title>
     <style>
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; background: #0a0a0a;
-            color: #fff; font-family: 'Arial Black', sans-serif;
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #0a0a0a; color: #fff; font-family: 'Arial Black', sans-serif; }
+        .game-area { position: relative; width: 100%; height: 60vh; background: radial-gradient(circle at bottom left, #2c1a10 0%, #000 70%); border-bottom: 2px solid #bf953f; display: flex; justify-content: center; align-items: center; }
+        #plane { position: absolute; bottom: 50px; left: 50px; font-size: 60px; z-index: 10; filter: drop-shadow(0 0 15px #bf953f); transition: transform 0.1s linear; }
+        .multiplier { font-size: 100px; font-weight: bold; background: linear-gradient(to bottom, #fff, #bf953f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; z-index: 5; }
+        .controls { height: 40vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #050505; gap: 20px; }
+        .stats { font-size: 24px; color: #bf953f; letter-spacing: 2px; }
+        /* КНОПКА, КОТОРАЯ ТОЧНО БУДЕТ РАБОТАТЬ */
+        .main-btn {
+            width: 300px; height: 80px; font-size: 25px; font-weight: bold; cursor: pointer;
+            text-transform: uppercase; border: 2px solid #bf953f; background: #bf953f; color: #000;
+            box-shadow: 0 0 30px rgba(191, 149, 63, 0.5); transition: 0.2s;
         }
-
-        /* График и анимация */
-        .game-area {
-            position: relative; width: 100%; height: 70vh;
-            background: radial-gradient(circle at bottom left, #2c1a10 0%, #000 70%);
-            border-bottom: 2px solid #bf953f;
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
-        }
-
-        #plane {
-            position: absolute; bottom: 50px; left: 50px;
-            font-size: 50px; transition: transform 0.1s linear;
-            z-index: 10; filter: drop-shadow(0 0 15px #bf953f);
-        }
-
-        .multiplier {
-            font-size: 120px; font-weight: bold;
-            background: linear-gradient(to bottom, #fff, #bf953f);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            z-index: 5; text-shadow: 0 0 30px rgba(191, 149, 63, 0.3);
-        }
-
-        /* Панель управления */
-        .controls {
-            height: 30vh; display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            background: #050505; gap: 15px;
-        }
-
-        .stats { font-size: 20px; color: #bf953f; letter-spacing: 2px; }
-        .balance-num { color: #fff; font-size: 30px; }
-
-        .btn-box { display: flex; gap: 20px; }
-
-        .btn {
-            padding: 20px 60px; font-size: 20px; font-weight: bold;
-            text-transform: uppercase; cursor: pointer; border: none;
-            transition: 0.3s; letter-spacing: 2px;
-        }
-
-        #bet-btn { background: #bf953f; color: #000; }
-        #bet-btn:disabled { background: #444; color: #888; cursor: not-allowed; }
-
-        #cashout-btn { background: #ff4d4d; color: #fff; display: none; }
-
-        .status-msg { height: 20px; color: #ff4d4d; font-size: 14px; text-transform: uppercase; }
-
-        /* След от самолета */
-        #trail {
-            position: absolute; bottom: 75px; left: 75px;
-            width: 0; height: 0; border-left: 3px solid #bf953f;
-            border-bottom: 3px solid #bf953f; opacity: 0.3;
-        }
+        .main-btn:active { transform: scale(0.95); background: #fff; }
+        .main-btn#cashout-btn { background: #ff4d4d; border-color: #ff4d4d; color: #fff; display: none; }
+        .status-msg { height: 30px; color: #ff4d4d; font-size: 18px; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -70,24 +27,20 @@
     <div class="game-area">
         <div id="plane">✈️</div>
         <div class="multiplier" id="x-val">x1.00</div>
-        <div id="trail"></div>
     </div>
 
     <div class="controls">
         <div class="status-msg" id="msg"></div>
-        <div class="stats">БАЛАНС: <span class="balance-num" id="balance">1000</span> DARK</div>
-
-        <div class="btn-box">
-            <button class="btn" id="bet-btn">СТАВКА 100</button>
-            <button class="btn" id="cashout-btn">ЗАБРАТЬ</button>
-        </div>
+        <div class="stats">БАЛАНС: <span id="balance">1000</span> DARK</div>
+        <button class="main-btn" id="bet-btn" onclick="startRound()">СТАВКА 100</button>
+        <button class="main-btn" id="cashout-btn" onclick="cashOut()">ЗАБРАТЬ</button>
+        <div style="color: #444; font-size: 10px;">@DARKAIthe_bot</div>
     </div>
 
     <script>
         let balance = 1000;
         let x = 1.00;
         let isFlying = false;
-        let betAmount = 100;
         let gameInterval;
 
         const xText = document.getElementById('x-val');
@@ -98,74 +51,52 @@
         const msg = document.getElementById('msg');
 
         function startRound() {
-            if (balance < betAmount) {
-                msg.innerText = "НЕДОСТАТОЧНО СРЕДСТВ";
-                return;
-            }
-
-            // Сброс настроек
+            if (balance < 100) { msg.innerText = "МАЛО ДЕНЕГ!"; return; }
             isFlying = true;
             x = 1.00;
-            balance -= betAmount;
-            updateUI();
-
+            balance -= 100;
+            balanceText.innerText = balance;
             msg.innerText = "";
             betBtn.style.display = 'none';
             cashBtn.style.display = 'block';
-            plane.style.transform = translate(0, 0);
 
-            // Генерация момента взрыва (Crash)
-            // Чем выше X, тем меньше шанс до него дойти
-            const crashAt = Math.random() * 10 + 1;
-[09.05.2026 12:45] 𝗗𝗔𝗥𝗞: gameInterval = setInterval(() => {
-                x += 0.01 + (x / 100); // Скорость роста X увеличивается
+            let crashAt = (Math.random() * 5 + 1.1).toFixed(2);
+
+            gameInterval = setInterval(() => {
+                x += 0.01 + (x/80);
                 xText.innerText = x${x.toFixed(2)};
-
-                // Двигаем самолет вверх и вправо
-                let move = (x - 1) * 50;
-                plane.style.transform = translate(${move * 1.5}px, -${move}px);
+                let move = (x - 1) * 60;
+                plane.style.transform = translate(${move * 1.2}px, -${move}px);
 
                 if (x >= crashAt) {
-                    finishGame(true);
+                    clearInterval(gameInterval);
+                    isFlying = false;
+                    msg.innerText = "CRASH! УЛЕТЕЛ!";
+                    xText.style.color = "#ff4d4d";
+                    setTimeout(resetGame, 2000);
                 }
             }, 50);
         }
-
-        function cashOut() {
+[09.05.2026 13:04] 𝗗𝗔𝗥𝗞: function cashOut() {
             if (!isFlying) return;
-            let win = betAmount * x;
-            balance += win;
-            msg.style.color = "#00ff00";
-            msg.innerText = ВЫИГРЫШ: +${win.toFixed(0)};
-            finishGame(false);
-        }
-
-        function finishGame(isCrash) {
-            isFlying = false;
             clearInterval(gameInterval);
-
-            if (isCrash) {
-                msg.style.color = "#ff4d4d";
-                msg.innerText = "САМОЛЕТ УЛЕТЕЛ!";
-                xText.style.color = "#ff4d4d";
-            }
-
-            setTimeout(() => {
-                betBtn.style.display = 'block';
-                cashBtn.style.display = 'none';
-                xText.style.color = "";
-                xText.innerText = "x1.00";
-                plane.style.transform = translate(0, 0);
-                updateUI();
-            }, 2000);
+            let win = 100 * x;
+            balance += win;
+            balanceText.innerText = Math.floor(balance);
+            msg.innerText = ВЫИГРАЛ: +${Math.floor(win)};
+            msg.style.color = "#00ff00";
+            isFlying = false;
+            setTimeout(resetGame, 2000);
         }
 
-        function updateUI() {
-            balanceText.innerText = balance.toFixed(0);
+        function resetGame() {
+            betBtn.style.display = 'block';
+            cashBtn.style.display = 'none';
+            xText.style.color = "#fff";
+            xText.innerText = "x1.00";
+            plane.style.transform = "translate(0,0)";
+            msg.style.color = "#ff4d4d";
         }
-
-        betBtn.addEventListener('click', startRound);
-        cashBtn.addEventListener('click', cashOut);
     </script>
 </body>
 </html>
