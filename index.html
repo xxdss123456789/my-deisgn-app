@@ -100,3 +100,59 @@
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>DARK AVIATOR FIX</title>
+    <style>
+        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; text-align: center; }
+        .game { height: 60vh; position: relative; background: #111; overflow: hidden; border-bottom: 2px solid gold; }
+        #plane { position: absolute; bottom: 20px; left: 20px; font-size: 50px; z-index: 10; }
+        .x { font-size: 80px; margin-top: 100px; color: gold; font-weight: bold; }
+        .btn {
+            padding: 20px 50px; font-size: 20px; background: gold; border: none;
+            cursor: pointer; margin-top: 20px; font-weight: bold; text-transform: uppercase;
+        }
+        .btn:active { transform: scale(0.9); }
+    </style>
+</head>
+<body>
+    <div class="game">
+        <div id="plane">✈️</div>
+        <div class="x" id="displayX">x1.00</div>
+    </div>
+    <div id="status" style="color: red; margin-top: 10px;"></div>
+    <button class="btn" id="go" onclick="fly()">СТАВКА 100</button>
+
+    <script>
+        // Проверка: работает ли вообще скрипт
+        console.log("Скрипт запущен!");
+
+        let x = 1.00;
+        let timer;
+
+        function fly() {
+            document.getElementById('go').style.display = 'none';
+            document.getElementById('status').innerText = "ПОЛЕТЕЛИ!";
+
+            let crash = Math.random() * 5 + 1.1;
+
+            timer = setInterval(() => {
+                x += 0.02;
+                document.getElementById('displayX').innerText = "x" + x.toFixed(2);
+
+                // Двигаем самолет
+                let pos = (x - 1) * 50;
+                document.getElementById('plane').style.transform = translate(${pos}px, -${pos}px);
+
+                if (x >= crash) {
+                    clearInterval(timer);
+                    document.getElementById('status').innerText = "CRASH! САМОЛЕТ УЛЕТЕЛ";
+                    setTimeout(() => { location.reload(); }, 2000);
+                }
+            }, 50);
+        }
+    </script>
+</body>
+</html>
