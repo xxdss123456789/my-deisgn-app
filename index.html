@@ -3,61 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <title>DARK ПРИВЕТСТВУЕТ</title>
-
     <style>
-        /* Это и есть тот самый CSS — здесь мы настраиваем красоту */
         body {
-            background-color: #f5f5dc; /* Бежевый фон */
+            background-color: #f5f5dc;
             height: 100vh;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Georgia', serif; /* Красивый шрифт с засечками */
-            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            color: #1a1a1a;
         }
 
-        .container {
+        .main-card {
             text-align: center;
+            padding: 40px;
+            border: 1px solid rgba(191, 149, 63, 0.3); /* Тонкая золотистая рамка */
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px); /* Эффект матового стекла */
+            border-radius: 20px;
         }
 
         h1 {
-            font-size: 60px;
-            color: #1a1a1a;
-            letter-spacing: 10px;
-            margin-bottom: 10px;
+            font-size: 45px;
+            letter-spacing: 8px;
             text-transform: uppercase;
+            margin-bottom: 30px;
         }
 
         .gold {
-            /* Делаем золотой градиент на буквах */
             background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            display: inline-block;
         }
 
-        .line {
-            height: 2px;
-            width: 80px;
-            background-color: #bf953f; /* Золотая полоска */
-            margin: 20px auto;
+        /* Контейнер для кнопок */
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
         }
 
-        p {
-            font-size: 14px;
-            color: #8b8b8b;
-            letter-spacing: 5px;
+        /* Стиль кнопок */
+        .btn {
+            text-decoration: none;
+            color: #1a1a1a;
+            padding: 12px 40px;
+            border: 1px solid #bf953f;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            letter-spacing: 2px;
             text-transform: uppercase;
+            font-size: 13px;
+        }
+
+        /* Эффект при наведении на кнопку */
+        .btn:hover {
+            background: #bf953f;
+            color: white;
+            box-shadow: 0 5px 15px rgba(191, 149, 63, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .socials {
+            margin-top: 40px;
+        }
+
+        .socials a {
+            text-decoration: none;
+            color: #bf953f;
+            margin: 0 10px;
+            font-size: 12px;
+            border-bottom: 1px solid transparent;
+        }
+
+        .socials a:hover {
+            border-bottom: 1px solid #bf953f;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="main-card">
         <h1>DARK <span class="gold">ПРИВЕТСТВУЕТ</span></h1>
-        <div class="line"></div>
-        <p>Luxury & Style</p>
+
+        <div class="buttons">
+            <a href="#" class="btn">Зайти в DARK</a>
+            <a href="#" class="btn">Наши проекты</a>
+            <a href="#" class="btn">Связаться</a>
+        </div>
+
+        <div class="socials">
+            <a href="#">TELEGRAM</a>
+            <a href="#">INSTAGRAM</a>
+            <a href="#">VKONTAKTE</a>
+        </div>
     </div>
 
 </body>
